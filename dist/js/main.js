@@ -1,29 +1,64 @@
-var Driver = (function () {
-    function Driver() {
-        this.div = document.createElement("driver");
-        document.body.appendChild(this.div);
-        this.div.style.transform = "translate(200px,100px)";
-        var m = new Message();
-        m.logMessage("Created a driver!");
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var GameObject = (function () {
+    function GameObject(tag, parent) {
+        this.div = document.createElement(tag);
+        parent.appendChild(this.div);
+    }
+    return GameObject;
+}());
+var Driver = (function (_super) {
+    __extends(Driver, _super);
+    function Driver(parent) {
+        var _this = _super.call(this, "driver", parent) || this;
+        Message.logMessage("Created a driver!");
+        return _this;
     }
     return Driver;
-}());
-var Kart = (function () {
+}(GameObject));
+var Kart = (function (_super) {
+    __extends(Kart, _super);
     function Kart() {
-        this.speed = 3;
-        this.div = document.createElement("kart");
-        document.body.appendChild(this.div);
-        this.div.style.transform = "translate(200px,100px)";
-        var m = new Message();
-        m.logMessage("Created a kart!");
+        var _this = _super.call(this, "kart", document.body) || this;
+        _this.speed = 3;
+        _this.posX = 0;
+        _this.posY = 100;
+        Message.logMessage("Created a kart!");
+        return _this;
     }
+    Kart.prototype.setDriver = function (d) {
+        this.driver = d;
+    };
+    Kart.prototype.getDiv = function () {
+        return this.div;
+    };
+    Kart.prototype.move = function () {
+        this.posX += this.speed;
+        this.div.style.transform = "translate(" + this.posX + "px, " + this.posY + "px)";
+    };
     return Kart;
-}());
+}(GameObject));
 var Game = (function () {
     function Game() {
-        var k = new Kart();
-        var d = new Driver();
+        var _this = this;
+        this.kart = new Kart();
+        var d = new Driver(this.kart.getDiv());
+        this.kart.setDriver(d);
+        requestAnimationFrame(function () { return _this.gameLoop(); });
     }
+    Game.prototype.gameLoop = function () {
+        var _this = this;
+        this.kart.move();
+        requestAnimationFrame(function () { return _this.gameLoop(); });
+    };
     return Game;
 }());
 window.addEventListener("load", function () {
@@ -32,7 +67,7 @@ window.addEventListener("load", function () {
 var Message = (function () {
     function Message() {
     }
-    Message.prototype.logMessage = function (str) {
+    Message.logMessage = function (str) {
         console.log(str);
     };
     return Message;
